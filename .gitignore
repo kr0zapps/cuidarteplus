@@ -1,5 +1,8 @@
 BACKEND/node_modules
 FRONTEND/node_modules
+node_modules
 .env
 BACKEND/.env
-FRONTEND/.env
+FRONTEND/.env
+playwright-report
+test-results
