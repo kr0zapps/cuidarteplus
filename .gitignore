@@ -6,3 +6,4 @@ BACKEND/.env
 FRONTEND/.env
 playwright-report
 test-results
+BACKEND/coverage

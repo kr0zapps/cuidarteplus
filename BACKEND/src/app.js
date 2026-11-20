@@ -47,6 +47,11 @@ app.get("/", (req, res) => {
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`cuidarteplus API escuchando en puerto ${PORT}`);
-});
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`cuidarteplus API escuchando en puerto ${PORT}`);
+  });
+}
+
+module.exports = app;
+
