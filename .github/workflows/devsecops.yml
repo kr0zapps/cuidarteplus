@@ -120,17 +120,17 @@ jobs:
         uses: github/codeql-action/analyze@v3
 
   # ---------------------------------------------------------------
-  # 4. Calidad de codigo (SonarQube). Requiere los secretos
-  #    SONAR_TOKEN y SONAR_HOST_URL; si faltan, el analisis se omite
-  #    y queda un aviso visible en la ejecucion.
+  # 4. Calidad de codigo (SonarCloud). Requiere el secreto
+  #    SONAR_TOKEN; si falta, el analisis se omite y queda un
+  #    aviso visible en la ejecucion.
   # ---------------------------------------------------------------
   sonarqube:
-    name: SonarQube (Calidad Estatica)
+    name: SonarCloud (Calidad Estatica)
     runs-on: ubuntu-latest
     needs: jest
     env:
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+      SONAR_HOST_URL: https://sonarcloud.io
     steps:
       - name: Checkout del repositorio
         uses: actions/checkout@v4
@@ -143,12 +143,16 @@ jobs:
           name: cobertura-jest
           path: BACKEND/coverage
 
-      - name: Avisar si falta la configuracion de SonarQube
-        if: ${{ env.SONAR_TOKEN == '' || env.SONAR_HOST_URL == '' }}
-        run: echo "::warning title=SonarQube omitido::Faltan los secretos SONAR_TOKEN y SONAR_HOST_URL. No se ejecuto el analisis."
+      - name: Avisar si falta la configuracion de SonarCloud
+        if: ${{ env.SONAR_TOKEN == '' }}
+        run: echo "::warning title=SonarCloud omitido::Falta el secreto SONAR_TOKEN. No se ejecuto el analisis."
 
-      - name: Analisis SonarQube
-        if: ${{ env.SONAR_TOKEN != '' && env.SONAR_HOST_URL != '' }}
+      - name: Ajustar rutas del informe de cobertura
+        if: ${{ env.SONAR_TOKEN != '' }}
+        run: sed -i 's#^SF:#SF:BACKEND/#' BACKEND/coverage/lcov.info
+
+      - name: Analisis SonarCloud
+        if: ${{ env.SONAR_TOKEN != '' }}
         uses: SonarSource/sonarqube-scan-action@v5
 
   # ---------------------------------------------------------------
